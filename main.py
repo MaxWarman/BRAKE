@@ -7,10 +7,14 @@ class Group:
         self.order = order
 
 class GroupPoly(poly.Polynomial):
-    def __init__(self, group: Group, coef: list):
-        self.groupOrder = group.order
-        super().__init__(coef)
+    def __init__(self, groupOrder: int, coef: list, domain=None, window=None, symbol='x'):
+        self.groupOrder = groupOrder
+        super().__init__(coef, domain, window, symbol)
         self.updatePoly()
+
+    # def __init__(self, group: Group, polynomial):
+    #     self.groupOrder = group.order
+    #     self.poly = polynomial.copy()
 
     def modPoly(self):
         for i, c in enumerate(self.coef):
@@ -39,17 +43,27 @@ class GroupPoly(poly.Polynomial):
         txt += f"deg(f) = {self.degree()}, "
         txt += f"|G| = {self.groupOrder}"
         return txt
+    
+    def __add__(self, other):
+        if self.groupOrder != other.groupOrder:
+            raise ValueError("Polynomials must have the same group order!")
+        try:
+            resultCoef = self._add(self.coef, other.coef)
+        except Exception:
+            return NotImplemented
+        return GroupPoly(self.groupOrder, resultCoef)
 
 def runTests():
     print("\nRunnig tests...")
     G = Group(4)
-    assert(GroupPoly(G, [0,1,2,3]) == GroupPoly(G, [4,5,6,7]))
+    assert(GroupPoly(G.order, [0,1,2,3]) == GroupPoly(G.order, [4,5,6,7]))
     print("All assertion tests passed!")
 
 def main():
     G = Group(5)
-    p1 = GroupPoly(G, [1,2,3,4])
-    p2 = GroupPoly(G, [1,2,3,4])
+    p1 = GroupPoly(G.order, [1,2,3,4])
+    p2 = GroupPoly(G.order, [1,2,3,4])
+
     print(p1)
     print(p2)
 
