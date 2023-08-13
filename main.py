@@ -49,9 +49,15 @@ def runTests():
 def main():
     G = Group(5)
     p1 = GroupPoly(G, [1,2,3,4])
+    p2 = GroupPoly(G, [1,2,3,4])
     print(p1)
-    print(p1 % 2)
+    print(p2)
 
 if __name__ == "__main__":
     main()
-    runTests()
+    # runTests()
+
+"""
+To do:
+- fix operations like addition/multiplication
+"""
