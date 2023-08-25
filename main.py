@@ -12,10 +12,6 @@ class GroupPoly(poly.Polynomial):
         super().__init__(coef, domain, window, symbol)
         self.updatePoly()
 
-    # def __init__(self, group: Group, polynomial):
-    #     self.groupOrder = group.order
-    #     self.poly = polynomial.copy()
-
     def modPoly(self):
         for i, c in enumerate(self.coef):
             self.coef[i] = c % self.groupOrder
@@ -43,14 +39,14 @@ class GroupPoly(poly.Polynomial):
         txt += f"deg(f) = {self.degree()}, "
         txt += f"|G| = {self.groupOrder}"
         return txt
-    
+
     def __add__(self, other):
         if self.groupOrder != other.groupOrder:
             raise ValueError("Polynomials must have the same group order!")
         try:
             resultCoef = self._add(self.coef, other.coef)
-        except Exception:
-            return NotImplemented
+        except Exception as e:
+            raise e
         return GroupPoly(self.groupOrder, resultCoef)
 
 def runTests():
@@ -65,7 +61,6 @@ def main():
     p2 = GroupPoly(G.order, [1,2,3,4])
 
     print(p1)
-    print(p2)
 
 if __name__ == "__main__":
     main()
