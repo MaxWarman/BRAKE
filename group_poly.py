@@ -36,8 +36,9 @@ class GroupPoly():
         txt  = f"f[x] = "
         l = len(self.coef)
         for i,c in enumerate(self.coef):
-            txt += f"{c} "
+            txt += f"{c}"
             if i != 0:
+                txt += " "
                 txt += f"x^{i}"
             if i != l - 1:
                 txt += " + "
