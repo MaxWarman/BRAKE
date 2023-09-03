@@ -1,4 +1,5 @@
 import sympy
+import group_poly
 import numpy as np
 
 def main():
