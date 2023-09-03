@@ -121,8 +121,7 @@ class GroupPoly():
         
     def __neg__(self):
         result_coef = np.array(self.coef)
-        for i, coef in enumerate(result_coef):
-            result_coef[i] = -coef
+        result_coef *= -1
         
         return GroupPoly(self.group_order, result_coef)
     
