@@ -36,7 +36,7 @@ class GroupPoly():
         txt  = f"f[x] = "
         l = len(self.coef)
         for i,c in enumerate(self.coef):
-            txt += f"{c}"
+            txt += f"{c}git"
             if i != 0:
                 txt += " "
                 txt += f"x^{i}"
@@ -48,6 +48,9 @@ class GroupPoly():
         return txt
 
     def _add(self, other_poly):
+        if not isinstance(other_poly, GroupPoly):
+            raise ValueError("Objects both must be of class GroupPoly!")
+
         if self.group_order != other_poly.group_order:
             raise ValueError("Polynomials must have the same group order!")
 
@@ -62,6 +65,9 @@ class GroupPoly():
         return result_coef
     
     def _subtract(self, other_poly):
+        if not isinstance(other_poly, GroupPoly):
+            raise ValueError("Objects both must be of class GroupPoly!")
+        
         if self.group_order != other_poly.group_order:
             raise ValueError("Polynomials must have the same group order!")
         
@@ -76,6 +82,9 @@ class GroupPoly():
         return result_coef
     
     def _multiply(self, other_poly):
+        if not isinstance(other_poly, GroupPoly):
+            raise ValueError("Objects both must be of class GroupPoly!")
+        
         if self.group_order != other_poly.group_order:
             raise ValueError("Polynomials must have the same group order!")
         
@@ -204,4 +213,5 @@ if __name__ == "__main__":
 """
 To do:
 - do i even need division of polynomials (I hope not)
+- constructor check if coefficients are array-like (list, np.array)
 """
