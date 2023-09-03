@@ -38,9 +38,9 @@ class GroupPoly():
         for i,c in enumerate(self.coef):
             txt += f"{c} "
             if i != 0:
-                txt += f"x**{i} "
+                txt += f"x^{i}"
             if i != l - 1:
-                txt += "+ "
+                txt += " + "
         txt += f", "        
         txt += f"deg(f) = {self.degree()}, "
         txt += f"|G| = {self.group_order}"
@@ -197,7 +197,7 @@ def main():
     print(GroupPoly.one(G.order))
 
 if __name__ == "__main__":
-    # main()
+    main()
     run_tests()
 
 """
