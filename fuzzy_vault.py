@@ -27,14 +27,14 @@ class FuzzyVault:
             multiplication_component = GroupPoly(group_order, [-value, 1])
             vault = vault * multiplication_component
 
-        secret_coefs = []
+        secret_coefs = np.array([])
         for i in range(sec_parameter):
 
             upper_bound = group_order - 1
             lower_bound = 0 if i != sec_parameter - 1 else 1
 
             rand_coef = secrets.randbelow(upper_bound - lower_bound + 1) + lower_bound
-            secret_coefs.append(rand_coef)
+            np.append(secret_coefs, rand_coef)
 
         secret_polynomial = GroupPoly(group_order, secret_coefs)
         vault = vault + secret_polynomial
