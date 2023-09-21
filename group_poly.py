@@ -1,4 +1,3 @@
-import sympy
 import numpy as np
 
 class Group:
@@ -198,7 +197,7 @@ def run_tests():
 
 def main():
     G = Group(7)
-    p1 = GroupPoly(G.order, [1,1,6,3,63,2,6,0])
+    p1 = GroupPoly(G.order, [1,1,6,3,6,2,6,0])
     p2 = GroupPoly(G.order, [1,1])
     print(p1)
     print(-p1)
