@@ -36,7 +36,7 @@ class GroupPoly():
         txt  = f"f[x] = "
         l = len(self.coef)
         for i,c in enumerate(self.coef):
-            txt += f"{c}git"
+            txt += f"{c}"
             if i != 0:
                 txt += " "
                 txt += f"x^{i}"
@@ -198,7 +198,7 @@ def run_tests():
 
 def main():
     G = Group(7)
-    p1 = GroupPoly(G.order, [1,1])
+    p1 = GroupPoly(G.order, [1,1,6,3,63,2,6,0])
     p2 = GroupPoly(G.order, [1,1])
     print(p1)
     print(-p1)
