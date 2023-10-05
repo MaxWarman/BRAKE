@@ -31,6 +31,13 @@ class GroupPoly():
                 return len(self.coef) - i - 1
         return 0
 
+    def value(self, arg: int):
+        value = 0
+        for i, coef in enumerate(self.coef):
+            value += (coef * pow(arg, i)) % self.group_order
+        value %= self.group_order
+        return value
+
     def __str__(self):
         txt  = f"f[x] = "
         l = len(self.coef)
@@ -136,8 +143,9 @@ class GroupPoly():
     
     def __eq__(self, other_poly):
         if not isinstance(other_poly, GroupPoly):
-            raise ValueError("Objects both must be of class GroupPoly!")
-        
+            print("GroupPoly.__eq__(): Objects both must be of class GroupPoly!")
+            return False
+
         if self.group_order != other_poly.group_order:
             raise ValueError("Polynomials must have the same group order!")
 
@@ -198,12 +206,11 @@ def run_tests():
 def main():
     G = Group(7)
     p1 = GroupPoly(G.order, [1,1,6,3,6,2,6,0])
-    p2 = GroupPoly(G.order, [1,1])
-    print(p1)
-    print(-p1)
+    p2 = GroupPoly(G.order, [1,1,1])
 
-    print(GroupPoly.zero(G.order))
-    print(GroupPoly.one(G.order))
+    for i in range(10):
+        print(p2.value(i))
+    
 
 if __name__ == "__main__":
     main()

@@ -46,8 +46,8 @@ class FuzzyVault:
 
 def main():
     G = Group(7)
-    fv = FuzzyVault(G.order, [1,1], 7, 2)
-    print(fv)
+    fv = FuzzyVault(group_order=G.order, bio_template=[1,1], verify_threshold=7, sec_parameter=2)
+    print(vars(fv))
 
 if __name__ == "__main__":
     main()
