@@ -78,5 +78,11 @@ TODO:
 - works for exactly the same bio_templates BUT:
     - cannot have more than one of the same vlaue as x
 - we do not use all of values in bio template to create fuzzy_vault (specify how many - the same amount as we want to verify?)
-- does not work for very large GF orders - even over 2**16 - ints are to small?
+- does not work for very large GF orders - even over 2**16 - ints are to small? 
+
+Important docs - Galois module:
+https://mhostetter.github.io/galois/latest/api/galois.FieldArray/#examples
+https://stackoverflow.com/questions/48065360/interpolate-polynomial-over-a-finite-field
+https://pypi.org/project/galois/
+https://github.com/mhostetter/galois
 """
