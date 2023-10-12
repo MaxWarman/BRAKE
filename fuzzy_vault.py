@@ -58,12 +58,12 @@ class FuzzyVault:
 
         f = galois.lagrange_poly(x, y)
         
-        print(f.coefficients())
+        print(f)
 
         return None
 
 def main():
-    G = Group(11)
+    G = Group(2137)
     fv = FuzzyVault(group_order=G.order, bio_template=[1,2,3,4,5,8], verify_threshold=4, sec_parameter=2)
 
     print(fv)
@@ -78,4 +78,5 @@ TODO:
 - works for exactly the same bio_templates BUT:
     - cannot have more than one of the same vlaue as x
 - we do not use all of values in bio template to create fuzzy_vault (specify how many - the same amount as we want to verify?)
+- does not work for very large GF orders - even over 2**16 - ints are to small?
 """
