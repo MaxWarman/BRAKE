@@ -31,7 +31,7 @@ class GroupPoly():
                 return len(self.coef) - i - 1
         return 0
 
-    def value(self, arg: int):
+    def eval(self, arg: int):
         value = 0
         for i, coef in enumerate(self.coef):
             value += (coef * pow(arg, i)) % self.group_order
@@ -105,7 +105,7 @@ class GroupPoly():
         # Perform coefficient-wise multiplication and addition
         for i, coef1 in enumerate(self.coef):
             for j, coef2 in enumerate(other_poly.coef):
-                result_coef[i+j] += coef1 * coef2
+                result_coef[i+j] += (coef1 * coef2) % self.group_order
         # Modulo reduction
         result_coef %= self.group_order
 
@@ -209,7 +209,7 @@ def main():
     p2 = GroupPoly(G.order, [1,1,1])
 
     for i in range(10):
-        print(p2.value(i))
+        print(p2.eval(i))
     
 
 if __name__ == "__main__":
