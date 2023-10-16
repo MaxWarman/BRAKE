@@ -1,8 +1,8 @@
 import numpy as np
 
 class Group:
-    def __init__(self, order):
-        self.order = order
+    def __init__(self, prime):
+        self.order = prime
 
 class GroupPoly():
     def __init__(self, group_order: int, coef: list):
@@ -34,9 +34,9 @@ class GroupPoly():
     def eval(self, arg: int):
         value = 0
         for i, coef in enumerate(self.coef):
-            value += (coef * pow(arg, i)) % self.group_order
+            value += (coef * pow(arg, i, self.group_order)) % self.group_order
         value %= self.group_order
-        return value
+        return int(value)
 
     def __str__(self):
         txt  = f"f[x] = "
