@@ -1,9 +1,6 @@
-import secrets
-import group_poly
-import numpy as np
 
 def main():
-    pass
-        
+    print("main.py")
+
 if __name__ == "__main__":
     main()
