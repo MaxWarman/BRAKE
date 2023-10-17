@@ -6,12 +6,21 @@ from group_poly import Group, GroupPoly
 
 class FuzzyVault:
 
-    def __init__(self, group_order: int, bio_template: list, verify_threshold: int):
+    def __init__(self, group_order: int, bio_template: list, verify_threshold: int, DEBUG=False):
+        """
+        param group_order: order of a group to use for finite field calculations;
+        param bio_template: enrolment biometrics template;
+        param verify_threshold: value of tau - how many biometrics parameters have to match with enrolment template at least
+        param DEBUG: if set to True, additional description will be logged
+        """
+        
         self.bio_template = bio_template
         self.bio_template_length = len(self.bio_template)
         self.verify_threshold = verify_threshold
-        
-        self.vault_polynomial = self.lock(group_order, self.bio_template, self.verify_threshold)
+        self.group_order = group_order
+
+        secret_polynomial = self.generate_secret_polynomial(group_order=self.group_order, sec_poly_deg=verify_threshold)
+        self.vault_polynomial = self.lock(group_order=self.group_order, bio_template=self.bio_template, secret_polynomial=secret_polynomial, DEBUG=DEBUG)
 
     def __str__(self):
         txt = "Fuzzy Vault:\n"
@@ -33,13 +42,13 @@ class FuzzyVault:
         return GroupPoly(group_order, secret_coefs)
 
     @classmethod
-    def lock(cls, group_order, bio_template, verify_threshold):
+    def lock(cls, group_order, bio_template, secret_polynomial=None, DEBUG=False):
         vault_polynomial = GroupPoly.one(group_order)
         for value in bio_template:
             multiplication_component = GroupPoly(group_order, [-value, 1])
             vault_polynomial = vault_polynomial * multiplication_component
-        secret_polynomial = cls.generate_secret_polynomial(group_order, verify_threshold)
-        print(f"secret polynomial: {secret_polynomial}")
+        if DEBUG:
+            print(f"Enrolment secret polynomial: {secret_polynomial}")
         vault_polynomial = vault_polynomial + secret_polynomial
         return vault_polynomial
 
@@ -57,13 +66,28 @@ class FuzzyVault:
 
         return secret_polynomial
 
-def main():
+def run_tests():
+    print("Running fuzzy_vault.py tests...")
+    DEBUG = True
+
     G = Group(prime=12401)
-    enroll_template = [random.randint(0,15) for i in range(44)]
-    fv = FuzzyVault(group_order=G.order, bio_template=enroll_template, verify_threshold=6)
-    print(fv)
-    a = FuzzyVault.unlock(fv, group_order=G.order, bio_template=[1,2,3,4,5,6])
-    print(a)
+    enrol_bottom_boundry = 0
+    enrol_up_boundry = 8
+
+    enrol_template = [1,2,3,4,5,6,7,8] + [random.randint(enrol_bottom_boundry, enrol_up_boundry) for i in range(36)]
+    verification_template = [1,2,3,4,5,6,7,8]
+
+    fv = FuzzyVault(group_order=G.order, bio_template=enrol_template, verify_threshold=len(verification_template), DEBUG=DEBUG)
+    if DEBUG:
+        print(fv)
+    retrieved_secret_polynomial = FuzzyVault.unlock(fv, group_order=G.order, bio_template=verification_template)
+    
+    print(f"Retrieved secret polynomial: {retrieved_secret_polynomial}")
+
+    print("Tests completed!")
+
+def main():
+    run_tests()
 
 if __name__ == "__main__":
     main()

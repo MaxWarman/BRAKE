@@ -201,7 +201,7 @@ def run_tests():
     # One polynomial test
     assert GroupPoly.one(group_order) == GroupPoly(group_order, [1])
 
-    print("All tests run successfuly!")
+    print("Tests completed!")
 
 def main():
     G = Group(7)
