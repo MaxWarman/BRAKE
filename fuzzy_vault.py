@@ -6,10 +6,11 @@ from group_poly import Group, GroupPoly
 
 class FuzzyVault:
 
-    def __init__(self, group_order: int, bio_template: list, verify_threshold: int, DEBUG=False):
+    def __init__(self, group_order: int, bio_template: list, secret_polynomial: list, verify_threshold: int, DEBUG=False):
         """
         param group_order: order of a group to use for finite field calculations;
         param bio_template: enrolment biometrics template;
+        param secret_polynomial: secret polynomial to use during enrolment phase
         param verify_threshold: value of tau - how many biometrics parameters have to match with enrolment template at least
         param DEBUG: if set to True, additional description will be logged
         """
@@ -19,7 +20,7 @@ class FuzzyVault:
         self.verify_threshold = verify_threshold
         self.group_order = group_order
 
-        secret_polynomial = self.generate_secret_polynomial(group_order=self.group_order, sec_poly_deg=verify_threshold)
+        self.secret_polynomial = secret_polynomial
         self.vault_polynomial = self.lock(group_order=self.group_order, bio_template=self.bio_template, secret_polynomial=secret_polynomial, DEBUG=DEBUG)
 
     def __str__(self):
@@ -76,15 +77,19 @@ def run_tests():
 
     enrol_template = [1,2,3,4,5,6,7,8] + [random.randint(enrol_bottom_boundry, enrol_up_boundry) for i in range(36)]
     verification_template = [1,2,3,4,5,6,7,8]
+    verify_threshold = len(verification_template)
+    secret_polynomial = FuzzyVault.generate_secret_polynomial(group_order=G.order, sec_poly_deg=verify_threshold)
 
-    fv = FuzzyVault(group_order=G.order, bio_template=enrol_template, verify_threshold=len(verification_template), DEBUG=DEBUG)
+    fv = FuzzyVault(group_order=G.order, bio_template=enrol_template, secret_polynomial=secret_polynomial, verify_threshold=verify_threshold, DEBUG=DEBUG)
     if DEBUG:
         print(fv)
     retrieved_secret_polynomial = FuzzyVault.unlock(fv, group_order=G.order, bio_template=verification_template)
     
     print(f"Retrieved secret polynomial: {retrieved_secret_polynomial}")
 
-    print("Tests completed!")
+    assert(secret_polynomial == retrieved_secret_polynomial)
+
+    print("\nTests completed!")
 
 def main():
     run_tests()
