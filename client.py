@@ -7,6 +7,7 @@ What happens in enrolment:
 
 import random
 import hashlib
+import sympy
 from sympy import nextprime
 from group_poly import Group
 from fuzzy_vault import FuzzyVault
@@ -28,7 +29,7 @@ class Client:
     def blind(cls, secret_polynomial):
         r, r_inv, r_mod = cls.generate_binding_exponent()
 
-        print((r*r_inv)%r_mod)
+        assert((r * r_inv)%r_mod == 1)
 
         txt = ""
         for i, coef in enumerate(secret_polynomial.coef):
@@ -50,6 +51,8 @@ class Client:
         print(f"blind: {blind}")
         print(f"unblind: {unblind}")
 
+        assert(hashed_polynomial == unblind)
+
         # hashed_polynomial_int = int(hashed_polynomial, 16)
         # poly_to_r = pow(hashed_polynomial_int, r, r_mod)
         # poly_to_minus_r = pow(poly_to_r, r_inv, r_mod)
@@ -66,8 +69,11 @@ class Client:
     @classmethod
     def generate_binding_exponent(cls):
         r_bottom_boundry = 2
-        r_top_boundry = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff 
-        r_mod = 1852673427797059126777135760139006525652319754650249024631321344126610074239199 #0x10000000000000000000000000000000000000000000000000000000000000000
+        r_top_boundry = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff42
+        #0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff 
+        r_mod = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff43
+        #0x1000000000000000000000000000000000000000000000000000000000000000DF 
+        #0x10000000000000000000000000000000000000000000000000000000000000000
 
         found_r_inv = False
         while not found_r_inv:
@@ -79,13 +85,6 @@ class Client:
                 continue
         
         return (r, r_inv, r_mod)
-
-def power(a,b,m):
-    result = 1
-    for i in range(b):
-        result *= a
-        result %= m
-    return result
 
 def run_tests():
     enrol_bottom_boundry = 1
@@ -103,6 +102,8 @@ if __name__ == "__main__":
 
 """
 TODO:
-- why pow() returns '0'
-    - probably because H(f) has to be generator of Z_q in the end
+- pow() does not work in modular exactly
+Try that:
+https://cs.stackexchange.com/questions/33552/how-can-i-compute-an-exponential-modulo-a-large-integer
+
 """
