@@ -28,12 +28,13 @@ class Client:
     def blind(cls, secret_polynomial):
         r, r_inv, r_mod = cls.generate_binding_exponent()
 
+        print((r*r_inv)%r_mod)
+
         txt = ""
         for i, coef in enumerate(secret_polynomial.coef):
             txt += str(coef)
             if i < len(secret_polynomial.coef) - 1:
                 txt += ","
-
 
         hashed_polynomial = hashlib.sha256(txt.encode("utf-8")).hexdigest()
 
@@ -41,10 +42,8 @@ class Client:
         blind = pow(hashed_polynomial_int, r, r_mod)
         blind = hex(blind)[2:]
 
-
         blind_int = int(blind, 16)
         unblind = pow(blind_int, r_inv, r_mod)
-
         unblind = hex(unblind)[2:]
 
         print(f"hashed_polynomial: {hashed_polynomial}")
@@ -68,7 +67,7 @@ class Client:
     def generate_binding_exponent(cls):
         r_bottom_boundry = 2
         r_top_boundry = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff 
-        r_mod = 0x10000000000000000000000000000000000000000000000000000000000000000
+        r_mod = 1852673427797059126777135760139006525652319754650249024631321344126610074239199 #0x10000000000000000000000000000000000000000000000000000000000000000
 
         found_r_inv = False
         while not found_r_inv:
