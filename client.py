@@ -19,9 +19,6 @@ class Client:
         # Generate secret polynomial for the Client with given ID
         secret_polynomial = FuzzyVault.generate_secret_polynomial(group_order=G.order, sec_poly_deg=verify_threshold)
 
-############### DELETE
-        secret_polynomial.coef = np.array([1] * len(secret_polynomial.coef))
-
         # Create FuzzyVault using secret polynomial and lock it
         fuzzy_vault = FuzzyVault(group_order=G.order, bio_template=self.biometrics_template, secret_polynomial=secret_polynomial, verify_threshold=verify_threshold, DEBUG=DEBUG)
 

@@ -2,6 +2,13 @@ import hashlib
 
 class Evaluator:
     def __init__(self):
+        """
+        Evaluator class constructor, that returns Evaluator instantiation object
+
+        Returns:
+            self (Evaluator): Evaluator class object
+        """
+
         # Proposed Evaluator model is not resistant to changing secret key value, thus the key has constant value
         self._secret_key = int(hashlib.sha256(b'evaluator_secret_key').hexdigest(), 16)
         self.mod = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff43

@@ -2,13 +2,32 @@ import os
 import json
 
 class Server:
-    def __init__(self, db_path):
+    def __init__(self, db_path: str):
+        """
+        Server class constructor, that returns Server instantiation object
+
+        Parameters:
+            db_path (str): Path to directory that stores parameters of enroled clients.
+
+        Returns:
+            self (Server): Server object
+        """
+
         self.db_path = db_path
         if not os.path.exists(self.db_path):
             print(f"Server: creating database directory {self.db_path}")
             os.makedirs(self.db_path)
 
-    def enrol_client(self, client_enrolment_json):
+    def enrol_client(self, client_enrolment_json: str):
+        """
+        Saving enroled client data to server database.
+
+        Parameters:
+            client_enrolment_json (str): Enrolment data received from client to be stored at the server.
+
+        Returns:
+            nothing
+        """
         client_enrolment_dict = json.loads(client_enrolment_json)
         
         client_id = client_enrolment_dict["client_id"]

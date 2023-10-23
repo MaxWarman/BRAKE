@@ -1,19 +1,56 @@
+import sympy
 import numpy as np
 
 class Group:
-    def __init__(self, prime):
+    def __init__(self, prime: int):
+        """
+        Group class constructor that returns Group instantiation object.
+
+        Parameters:
+            prime (int): Prime number that will be treated as group order.
+
+        Returns:
+            self (Group): Group class object
+        """
+        if not sympy.isprime(prime):
+            raise ValueError(f"Given group order is not prime: p = {prime}")
         self.order = prime
 
 class GroupPoly():
     def __init__(self, group_order: int, coef: list):
-            self.group_order = group_order
-            self.coef = np.array(coef, dtype=int)
-            self.update_poly()
+        """
+        GroupPoly class constructor that returns GroupPoly instantination object.
+
+        Parameters:
+            group_order (int): Prime order of group that the polynomial is put in.
+            coef (list): Coefficients of polynomial with coefficients of lowest powers put in the lowest indices of the list.
+
+        Returns:
+            self (GroupPoly): GroupPoly class object
+        """
+        self.group_order = group_order
+        self.coef = np.array(coef, dtype=int)
+        self.update_poly()
 
     def mod_poly(self):
+        """
+        Set values of all polynomial's coefficients to their value modulo group order of the polynomial.
+
+        Example:
+        group_order = 7
+        f(x) = 12 + 17x - 1x^2
+        f(x).mod_poly() = 5 + 3x + 6x^2
+        """
         self.coef %= self.group_order
 
     def reduce_poly(self):
+        """
+        Reduce polynomial by deleting leading zeros in the coefficient list.
+
+        Example:
+        f(x) = 3 + 0x + 7x^2 + 0x^3 + 0x^4
+        f(x).reduce_poly() = 3 + 0x + 7x^2  
+        """
         i = len(self.coef) - 1
         while i > 0:
             if self.coef[i] != 0:
@@ -22,16 +59,34 @@ class GroupPoly():
             i -= 1
 
     def update_poly(self):
+        """
+        Perform mod_poly() and reduce_poly() operations on polynomial.
+        """
         self.mod_poly()
         self.reduce_poly()
 
     def degree(self):
+        """
+        Returns degree of polynomial.
+
+        Returns:
+            degre (int): Degree of given polynomial.
+        """
         for i, c in enumerate(self.coef[::-1]):
             if c != 0:
                 return len(self.coef) - i - 1
         return 0
 
     def eval(self, arg: int):
+        """
+        Evaluate polynomial at certain argument value.
+
+        Parameters:
+            arg (int): Function argument 'x' to calculate value of polynomial at.
+
+        Returns:
+            value (int): Value f(x) of given polynomial.
+        """
         value = 0
         for i, coef in enumerate(self.coef):
             value += (coef * pow(arg, i, self.group_order)) % self.group_order
@@ -106,6 +161,7 @@ class GroupPoly():
         for i, coef1 in enumerate(self.coef):
             for j, coef2 in enumerate(other_poly.coef):
                 result_coef[i+j] += (coef1 * coef2) % self.group_order
+        
         # Modulo reduction
         result_coef %= self.group_order
 
