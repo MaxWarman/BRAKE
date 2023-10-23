@@ -14,6 +14,16 @@ class Evaluator:
         self.mod = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff43
     
     def evaluate(self, input_value: str):
+        """
+        Evaluate blinded value using Evaluator's secret key.
+
+        Parameters:
+            input_value (str): Value to be evaluated as hex string
+        
+        Returns:
+            evaluated_value_hex (str): Evaluated value of input as hex string
+        """
+        
         input_value_dec = int(input_value, 16)
         #evaluated_value_dec = pow(input_value_dec, self._secret_key, self.mod)
         evaluated_value_dec = (input_value_dec + self._secret_key) % self.mod
