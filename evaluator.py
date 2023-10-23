@@ -1,26 +1,24 @@
 import hashlib
-import numpy as np
-from group_poly import Group
 
 class Evaluator:
-    def __init__(self, secret_key):
-        self.secret_key = secret_key
+    def __init__(self):
+        # Proposed Evaluator model is not resistant to changing secret key value, thus the key has constant value
+        self._secret_key = int(hashlib.sha256(b'evaluator_secret_key').hexdigest(), 16)
         self.mod = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff43
     
     def evaluate(self, input_value: str):
         input_value_dec = int(input_value, 16)
-        evaluated_value_dec = pow(input_value_dec, self.secret_key, self.mod)
+        #evaluated_value_dec = pow(input_value_dec, self._secret_key, self.mod)
+        evaluated_value_dec = (input_value_dec + self._secret_key) % self.mod
         evaluated_value_hex = hex(evaluated_value_dec)[2:]
         return evaluated_value_hex
 
 def run_tests():
     print("evaluator.py")
-    input_value = hashlib.sha256(b'tajne_dane').hexdigest()
+    input_value = hashlib.sha256(b'blinded_data').hexdigest()
     print(f"Input value H(f)^r: {input_value}")
-
-    evaluator_secret_key = int(hashlib.sha256(b'tajny_klucz').hexdigest(), 16)
     
-    ev = Evaluator(secret_key=evaluator_secret_key)
+    ev = Evaluator()
     val = ev.evaluate(input_value=input_value)
     print(f"Evaluation H(f)^(r*k): {val}")
 
