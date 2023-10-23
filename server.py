@@ -1,3 +1,6 @@
+class Server:
+    pass
+
 def run_tests():
     print("server.py")
 

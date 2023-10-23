@@ -73,9 +73,9 @@ def run_tests():
 
     G = Group(prime=12401)
     enrol_bottom_boundry = 0
-    enrol_up_boundry = 8
+    enrol_top_boundry = 8
 
-    enrol_template = [1,2,3,4,5,6,7,8] + [random.randint(enrol_bottom_boundry, enrol_up_boundry) for i in range(36)]
+    enrol_template = [1,2,3,4,5,6,7,8] + [random.randint(enrol_bottom_boundry, enrol_top_boundry) for i in range(36)]
     verification_template = [1,2,3,4,5,6,7,8]
     verify_threshold = len(verification_template)
     secret_polynomial = FuzzyVault.generate_secret_polynomial(group_order=G.order, sec_poly_deg=verify_threshold)
