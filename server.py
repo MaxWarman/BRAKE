@@ -10,7 +10,7 @@ class Server:
             db_path (str): Path to directory that stores parameters of enroled clients.
 
         Returns:
-            self (Server): Server object
+            self (Server): Server class object
         """
 
         self.db_path = db_path
@@ -20,7 +20,7 @@ class Server:
 
     def enrol_client(self, client_enrolment_json: str):
         """
-        Saving enroled client data to server database.
+        Saving enroled client data to server database as .json file.
 
         Parameters:
             client_enrolment_json (str): Enrolment data received from client to be stored at the server.
