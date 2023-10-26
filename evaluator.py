@@ -13,7 +13,7 @@ class Evaluator:
         self._secret_key = int(hashlib.sha256(b'evaluator_secret_key').hexdigest(), 16)
         self.mod = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff43
     
-    def evaluate(self, input_value: str):
+    def evaluate(self, input_value: str) -> str:
         """
         Evaluate blinded value using Evaluator's secret key.
 
@@ -31,6 +31,7 @@ class Evaluator:
         return evaluated_value_hex
 
 def run_tests():
+    
     print("evaluator.py")
     input_value = hashlib.sha256(b'blinded_data').hexdigest()
     print(f"Input value H(f)^r: {input_value}")

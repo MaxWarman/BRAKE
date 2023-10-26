@@ -32,7 +32,7 @@ class GroupPoly():
         self.coef = np.array(coef, dtype=int)
         self.update_poly()
 
-    def mod_poly(self):
+    def mod_poly(self) -> None:
         """
         Set values of all polynomial's coefficients to their value modulo group order of the polynomial.
 
@@ -43,7 +43,7 @@ class GroupPoly():
         """
         self.coef %= self.group_order
 
-    def reduce_poly(self):
+    def reduce_poly(self) -> None:
         """
         Reduce polynomial by deleting leading zeros in the coefficient list.
 
@@ -58,14 +58,14 @@ class GroupPoly():
             self.coef = np.delete(self.coef, -1)
             i -= 1
 
-    def update_poly(self):
+    def update_poly(self) -> None:
         """
         Perform mod_poly() and reduce_poly() operations on polynomial.
         """
         self.mod_poly()
         self.reduce_poly()
 
-    def degree(self):
+    def degree(self) -> int:
         """
         Returns degree of polynomial.
 
@@ -77,7 +77,7 @@ class GroupPoly():
                 return len(self.coef) - i - 1
         return 0
 
-    def eval(self, arg: int):
+    def eval(self, arg: int) -> int:
         """
         Evaluate polynomial at certain argument value.
 
@@ -227,7 +227,7 @@ def run_tests():
     print("Running tests...")
 
     # Tests for Group of order 7
-    G = Group(7)
+    G = Group(prime=7)
     group_order = G.order
 
     # Test polynomials
