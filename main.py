@@ -46,19 +46,19 @@ def main():
     
     print("\n###### END VERIFICATION ######\n")
 
-    print("\n###### START KEY ESTABLISHMENT ######\n")
+    print("\n###### START KEY EXCHANGE ######\n")
 
     # Establish session key
     encrypted_session_key, session_key_hash = server.send_session_key_to_client(client_id=client_verification.id)
     recovered_session_key = client_verification.recover_session_key(encrypted_session_key=encrypted_session_key, client_private_key_PEM=client_private_key_PEM)
     recovered_session_key_hash = client_verification.get_session_key_hash(recovered_session_key)
     
-    print("\n###### END KEY ESTABLISHMENT ######\n")
+    print("\n###### END KEY EXCHANGE ######\n")
 
     # Assert if session keys are the same
     assert(recovered_session_key_hash == session_key_hash)
     
-    print("###### SESSION KEY ESTABLISHMENT SUCCESSFUL ######")
+    print("###### SESSION KEY EXCHANGE SUCCESSFUL ######")
 
 
 if __name__ == "__main__":
