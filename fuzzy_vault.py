@@ -52,11 +52,11 @@ class FuzzyVault:
         return random_arguments
 
     def unlock(self, verify_threshold: int) -> GroupPoly:
-
         GF = galois.GF(self.group_order)
+        number_of_unlocking_rounds = 3000
 
         poly_counting_dict = {}
-        for i in range(5000):
+        for i in range(number_of_unlocking_rounds):
             arguments = GF(self.get_random_arguments(verify_threshold))
             values = [self.vault_polynomial.eval(int(arg)) for arg in arguments]
             values = GF(values)

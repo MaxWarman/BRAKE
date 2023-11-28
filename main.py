@@ -8,7 +8,7 @@ def main():
     # If debug_flag == True - enter verbose mode with additional messages during program execution
     debug_flag = True
     # If verify_only == True - the program will skip the enrolment phase
-    verify_only = True
+    verify_only = False
     # If erase_client == True - client's profile will be erased from server's database at the end of the program
     erase_client = False
     
@@ -62,12 +62,13 @@ def main():
     
     print("\n###### END KEY EXCHANGE ######\n")
 
-    # Assert if session keys are the same
+    # Assert if session key hashes are the same
     assert(recovered_session_key_hash == session_key_hash)
     
     print("\n###### SESSION KEY EXCHANGE SUCCESSFUL ######\n")
 
-    print(f"Exchanged session key value: {recovered_session_key}")
+    if debug_flag:
+        print(f"Exchanged session key value: {recovered_session_key}")
 
     if erase_client:
         print("\n###### CLEAN-UP STEP ######\n")
