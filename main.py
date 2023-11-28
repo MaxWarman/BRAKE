@@ -5,37 +5,42 @@ from server import Server
 from group_poly import Group
 
 def main():
-    # Flag for debugging purpose
+    # If debug_flag == True - enter verbose mode with additional messages during program execution
     debug_flag = True
+    # If verify_only == True - the program will skip the enrolment phase
+    verify_only = True
+    # If erase_client == True - client's profile will be erased from server's database at the end of the program
+    erase_client = False
     
     # Define constant values
     SERVER_DB_PATH = "./server_db/"
     ENROL_BOTTOM_BOUNDRY = 1
-    ENROL_UP_BOUNDRY = 8
+    ENROL_UP_BOUNDRY = 12400
+    G = Group(prime=12401)
     
     # Create authentication Server instance
     server = Server(SERVER_DB_PATH)
 
-    print("\n###### START ENROLMENT ######\n")
-    
-    # Create enrolment Client instance
-    client_id = 1
-    verify_threshold = 8
-    client_enrolment_biometrics_template = [i for i in range(44)] #[1,2,3,4,5,6,7,8] + [random.randint(ENROL_BOTTOM_BOUNDRY, ENROL_UP_BOUNDRY) for i in range(36)]
-    G = Group(prime=12401)
-    client_enrolment = Client(client_id, client_enrolment_biometrics_template)
+    if not verify_only:
+        print("\n###### START ENROLMENT ######\n")
+        
+        # Create enrolment Client instance
+        client_id = 1
+        verify_threshold = 8
+        client_enrolment_biometrics_template = [i for i in range(44)]
+        client_enrolment = Client(client_id, client_enrolment_biometrics_template)
 
-    # Enrol Client to Server
-    enrolment_json = client_enrolment.enrol(verify_threshold=verify_threshold, group=G, DEBUG=debug_flag)
-    server.enrol_client(enrolment_json)
-    
-    print("\n###### END ENROLMENT ######\n")
+        # Enrol Client to Server
+        enrolment_json = client_enrolment.enrol(verify_threshold=verify_threshold, group=G, DEBUG=debug_flag)
+        server.enrol_client(enrolment_json)
+        
+        print("\n###### END ENROLMENT ######\n")
     
     print("\n###### START VERIFICATION ######\n")
     
     # Create verification Client instance
     client_id = 1
-    client_verification_biometrics_template = [i for i in range(44)] #[1,2,3,4,5,6,7,8] + [random.randint(ENROL_BOTTOM_BOUNDRY, ENROL_UP_BOUNDRY) for i in range(36)]
+    client_verification_biometrics_template = [i for i in range(22)] + [random.randint(ENROL_BOTTOM_BOUNDRY, ENROL_UP_BOUNDRY) for i in range(22)]
     client_verification = Client(client_id, client_verification_biometrics_template)
 
     # Send client request for public data
@@ -58,8 +63,13 @@ def main():
     # Assert if session keys are the same
     assert(recovered_session_key_hash == session_key_hash)
     
-    print("###### SESSION KEY EXCHANGE SUCCESSFUL ######")
+    print("\n###### SESSION KEY EXCHANGE SUCCESSFUL ######\n")
 
+    print(f"Exchanged session key value: {recovered_session_key}")
+
+    if erase_client:
+        print("\n###### CLEAN-UP STEP ######\n")
+        server.delete_existing_user_by_id(client_id)
 
 if __name__ == "__main__":
     main()

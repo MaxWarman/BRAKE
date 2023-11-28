@@ -39,15 +39,24 @@ class Server:
             self.generate_RSA_key_pair()
 
     def delete_existing_RSA_keys(self):
+        file_to_delete = self.private_key_filepath
         try:
-            os.unlink(self.private_key_filepath)
+            os.unlink(file_to_delete)
         except:
-            print(f"Could not delete {self.private_key_filepath}: File does not exist")
+            print(f"Could not delete {file_to_delete}: File does not exist")
         
+        file_to_delete = self.public_key_filepath
         try:
-            os.unlink(self.public_key_filepath)
+            os.unlink(file_to_delete)
         except:
-            print(f"Could not delete {self.public_key_filepath}: File does not exist")
+            print(f"Could not delete {file_to_delete}: File does not exist")
+
+    def delete_existing_user_by_id(self, id):
+        file_to_delete = f"{self.db_path}{id}.json"
+        try:
+            os.unlink(file_to_delete)
+        except:
+            print(f"Could not delete {file_to_delete}: File does not exist")
 
     def generate_RSA_key_pair(self):
         key = RSA.generate(self.RSA_key_size)

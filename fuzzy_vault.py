@@ -45,15 +45,35 @@ class FuzzyVault:
         vault_polynomial = vault_polynomial + secret_polynomial
         self.vault_polynomial = vault_polynomial
 
+    def get_random_arguments(self, how_many_indices: int):
+        set_of_indices = set(range(self.bio_template_length))
+        random_indices_of_bio_set = sorted(random.sample(set_of_indices, how_many_indices))
+        random_arguments = [self.bio_template[ind] for ind in random_indices_of_bio_set]
+        return random_arguments
+
     def unlock(self, verify_threshold: int) -> GroupPoly:
 
         GF = galois.GF(self.group_order)
-        arguments = GF(self.bio_template)
-        values = [self.vault_polynomial.eval(arg) for arg in self.bio_template]
-        values = GF(values)
 
-        interpolated_polynomial = galois.lagrange_poly(arguments, values)
-        secret_polynomial_coeffs = np.array([int(coefficient) for coefficient in interpolated_polynomial.coefficients()[::-1]])
+        poly_counting_dict = {}
+        for i in range(5000):
+            arguments = GF(self.get_random_arguments(verify_threshold))
+            values = [self.vault_polynomial.eval(int(arg)) for arg in arguments]
+            values = GF(values)
+
+            try:
+                interpolated_polynomial = galois.lagrange_poly(arguments, values)
+            except:
+                continue
+            
+            secret_polynomial_coeffs = list([int(coefficient) for coefficient in interpolated_polynomial.coefficients()[::-1]])
+            if str(secret_polynomial_coeffs) not in poly_counting_dict.keys():
+                poly_counting_dict[str(secret_polynomial_coeffs)] = 1
+            else:
+                poly_counting_dict[str(secret_polynomial_coeffs)] += 1
+
+        most_common_coefs_str = str(max(poly_counting_dict, key=poly_counting_dict.get))
+        secret_polynomial_coeffs = [int(val) for val in most_common_coefs_str.replace("[", "").replace("]", "").split(", ")]
         secret_polynomial = GroupPoly( group_order=self.group_order, coef=secret_polynomial_coeffs)
 
         return secret_polynomial
