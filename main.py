@@ -17,7 +17,8 @@ def main():
     ENROL_BOTTOM_BOUNDRY = 1
     ENROL_UP_BOUNDRY = 12400
     G = Group(prime=12401)
-    
+    bio_template_length = 44
+
     # Create authentication Server instance
     server = Server(SERVER_DB_PATH)
 
@@ -27,7 +28,7 @@ def main():
         # Create enrolment Client instance
         client_id = 1
         verify_threshold = 8
-        client_enrolment_biometrics_template = [i for i in range(44)]
+        client_enrolment_biometrics_template = [i for i in range(bio_template_length)]
         client_enrolment = Client(client_id, client_enrolment_biometrics_template)
 
         # Enrol Client to Server
@@ -40,7 +41,8 @@ def main():
     
     # Create verification Client instance
     client_id = 1
-    client_verification_biometrics_template = [i for i in range(22)] + [random.randint(ENROL_BOTTOM_BOUNDRY, ENROL_UP_BOUNDRY) for i in range(22)]
+    correct_samples = 22
+    client_verification_biometrics_template = [i for i in range(correct_samples)] + [random.randint(ENROL_BOTTOM_BOUNDRY, ENROL_UP_BOUNDRY) for i in range(bio_template_length - correct_samples)]
     client_verification = Client(client_id, client_verification_biometrics_template)
 
     # Send client request for public data
