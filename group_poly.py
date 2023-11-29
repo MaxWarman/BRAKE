@@ -7,11 +7,13 @@ class Group:
         Group class constructor that returns Group instantiation object.
 
         Parameters:
-            prime (int): Prime number that will be treated as group order.
+            - prime (int): Prime number that will be treated as group order.
 
         Returns:
-            self (Group): Group class object
+            - self (Group): Group class object
         """
+
+        # Test if given group order is prime number
         if not sympy.isprime(prime):
             raise ValueError(f"Given group order is not prime: p = {prime}")
         self.order = prime
@@ -19,14 +21,14 @@ class Group:
 class GroupPoly():
     def __init__(self, group_order: int, coef: list):
         """
-        GroupPoly class constructor that returns GroupPoly instantination object.
+        GroupPoly class constructor that returns GroupPoly instantination object
 
         Parameters:
-            group_order (int): Prime order of group that the polynomial is put in.
-            coef (list): Coefficients of polynomial with coefficients of lowest powers put in the lowest indices of the list.
+            - group_order (int): Prime order of group that the polynomial is put in
+            - coef (list): Coefficients of polynomial with coefficients of lowest powers put in the lowest indices of the list
 
         Returns:
-            self (GroupPoly): GroupPoly class object
+            - self (GroupPoly): GroupPoly class object
         """
         self.group_order = group_order
         self.coef = np.array(coef, dtype=int)
@@ -34,22 +36,25 @@ class GroupPoly():
 
     def mod_poly(self) -> None:
         """
-        Set values of all polynomial's coefficients to their value modulo group order of the polynomial.
+        Set values of all polynomial's coefficients to their value modulo group order of the polynomial
 
-        Example:
-        group_order = 7
-        f(x) = 12 + 17x - 1x^2
-        f(x).mod_poly() = 5 + 3x + 6x^2
+        Parameters:
+            - None
+
+        Returns:
+            - None
         """
         self.coef %= self.group_order
 
     def reduce_poly(self) -> None:
         """
-        Reduce polynomial by deleting leading zeros in the coefficient list.
+        Reduce polynomial by popping leading zeros in the coefficient list
 
-        Example:
-        f(x) = 3 + 0x + 7x^2 + 0x^3 + 0x^4
-        f(x).reduce_poly() = 3 + 0x + 7x^2  
+        Parameters:
+            - None
+
+        Returns:
+            - None
         """
         i = len(self.coef) - 1
         while i > 0:
@@ -60,17 +65,26 @@ class GroupPoly():
 
     def update_poly(self) -> None:
         """
-        Perform mod_poly() and reduce_poly() operations on polynomial.
+        Perform mod_poly() and reduce_poly() operations on polynomial
+
+        Parameters:
+            - None
+
+        Returns:
+            - None
         """
         self.mod_poly()
         self.reduce_poly()
 
     def degree(self) -> int:
         """
-        Returns degree of polynomial.
+        Return degree of polynomial
+
+        Parameters:
+            - None
 
         Returns:
-            degre (int): Degree of given polynomial.
+            degree (int): Degree of given polynomial
         """
         for i, c in enumerate(self.coef[::-1]):
             if c != 0:
@@ -79,13 +93,13 @@ class GroupPoly():
 
     def eval(self, arg: int) -> int:
         """
-        Evaluate polynomial at certain argument value.
+        Evaluate polynomial value f[x] for certain input value x
 
         Parameters:
-            arg (int): Function argument 'x' to calculate value of polynomial at.
+            - arg (int): Function argument 'x' to calculate value of polynomial at
 
         Returns:
-            value (int): Value f(x) of given polynomial.
+            - value (int): Value f(x) of given polynomial
         """
         value = 0
         for i, coef in enumerate(self.coef):
@@ -260,20 +274,7 @@ def run_tests():
     print("Tests completed!")
 
 def main():
-    G = Group(7)
-    p1 = GroupPoly(G.order, [1,1,6,3,6,2,6,0])
-    p2 = GroupPoly(G.order, [1,1,1])
-
-    for i in range(10):
-        print(p2.eval(i))
-    
+    run_tests()
 
 if __name__ == "__main__":
     main()
-    run_tests()
-
-"""
-To do:
-- do i even need division of polynomials (I hope not)
-- constructor check if coefficients are array-like (list, np.array)
-"""
