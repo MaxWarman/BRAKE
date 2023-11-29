@@ -98,21 +98,18 @@ class FuzzyVault:
         return list(unique_combinations_of_indices)
 
 
-    def unlock(self, verify_threshold: int) -> GroupPoly:
+    def unlock(self, verify_threshold: int, number_of_unlocking_rounds: int = 5000) -> GroupPoly:
         """
         Unlock secret polynomial from Fuzzy Vault using biometric verification template provided by Client
 
         Parameters:
             - verify_threshold (int): Number of (argument, value) pairs of Fuzzy Vault used to recover secret polynomial
-
+            - number_of_unlocking_rounds (int): Number of secret polynomial recovery rounds to perform
         Returns:
-            - secret_polynomiak (GroupPoly): Recovered secret polynomial object
+            - secret_polynomial (GroupPoly): Recovered secret polynomial object
         """
         # Define Finite Field of order delivered to Client from Server
         GF = galois.GF(self.group_order)
-
-        # Define numver of unlocking rounds to perform
-        number_of_unlocking_rounds = 3000
 
         # Dictionary structure for counting occurence of certain secret polynomials during unlocking process
         poly_counting_dict = {}

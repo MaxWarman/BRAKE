@@ -4,7 +4,7 @@ from client import Client
 from server import Server
 from group_poly import Group
 
-def main():
+def main(correct_samples = None):
     # If debug_flag == True - enter verbose mode with additional messages during program execution
     debug_flag = True
     # If verify_only == True - the program will skip the enrolment phase
@@ -17,9 +17,13 @@ def main():
     PRIME = 12401
     ENROL_BOTTOM_BOUNDRY = 1
     ENROL_UP_BOUNDRY = PRIME - 1
+
     G = Group(prime=PRIME)
     bio_template_length = 44
-    correct_samples = 22
+    number_of_unlocking_rounds = 5000
+
+    if correct_samples is None:
+        correct_samples = 22
 
     # Create authentication Server instance
     server = Server(SERVER_DB_PATH)
@@ -53,7 +57,7 @@ def main():
     verify_json = server.vault_request(client_id=client_verification.id)
     
     # Verify Client with Server, recover Client's private key
-    client_private_key_PEM = client_verification.verify(public_values_json=verify_json, group=G, DEBUG=debug_flag)
+    client_private_key_PEM = client_verification.verify(public_values_json=verify_json, group=G, number_of_unlocking_rounds=number_of_unlocking_rounds, DEBUG=debug_flag)
     
     print("\n###### END VERIFICATION ######\n")
 

@@ -17,10 +17,10 @@ class Client:
         Client class constructor, that returns Client instantiation object
 
         Parameters:
-            client_id (int): Client's identificator
+            - client_id (int): Client's identificator
 
         Returns:
-            self (Client): Client class object
+            - self (Client): Client class object
         """
         self.id = client_id
         self.biometrics_template = biometrics_template
@@ -62,13 +62,14 @@ class Client:
 
         return public_values_json
     
-    def verify(self, public_values_json: str, group: Group, DEBUG=False) -> str:
+    def verify(self, public_values_json: str, group: Group, number_of_unlocking_rounds: int = 5000, DEBUG=False) -> str:
         """
         Execute verification phase of BRAKE protocol
 
         Parameters:
             - public_values_json (str): Client's profile distributed to Server as JSON
             - group (Group): Group in which the protocol is executed
+            - number_of_unlocking_rounds (int): Number of secret polynomial recovery rounds to perform
             - DEBUG (bool): Flag for verbose execution mode
 
         Returns:
@@ -85,7 +86,7 @@ class Client:
         fuzzy_vault.set_vault_polynomial(vault_polynomial_coefs=public_values_dict["vault_coefs"])
 
         # Unlock vault using 
-        recovered_secret_polynomial = fuzzy_vault.unlock(verify_threshold=verify_threshold)
+        recovered_secret_polynomial = fuzzy_vault.unlock(verify_threshold=verify_threshold, number_of_unlocking_rounds=number_of_unlocking_rounds)
 
         # Evaluate OPRF with Evaluator
         unblinded_evaluator_result = self.evaluate(secret_polynomial=recovered_secret_polynomial, group=group, DEBUG=DEBUG)
@@ -319,10 +320,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-"""
-TODO:
-
-
-"""
