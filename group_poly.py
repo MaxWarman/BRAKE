@@ -1,6 +1,7 @@
 import sympy
 import numpy as np
 
+
 class Group:
     def __init__(self, prime: int):
         """
@@ -18,7 +19,8 @@ class Group:
             raise ValueError(f"Given group order is not prime: p = {prime}")
         self.order = prime
 
-class GroupPoly():
+
+class GroupPoly:
     def __init__(self, group_order: int, coef: list):
         """
         GroupPoly class constructor that returns GroupPoly instantination object
@@ -108,16 +110,16 @@ class GroupPoly():
         return int(value)
 
     def __str__(self):
-        txt  = f"f[x] = "
+        txt = f"f[x] = "
         l = len(self.coef)
-        for i,c in enumerate(self.coef):
+        for i, c in enumerate(self.coef):
             txt += f"{c}"
             if i != 0:
                 txt += " "
                 txt += f"x^{i}"
             if i != l - 1:
                 txt += " + "
-        txt += f", "        
+        txt += f", "
         txt += f"deg(f) = {self.degree()}, "
         txt += f"|G| = {self.group_order}"
         return txt
@@ -129,7 +131,7 @@ class GroupPoly():
         if self.group_order != other_poly.group_order:
             raise ValueError("Polynomials must have the same group order!")
 
-        # Pad coefficient arrays with zeros to have the same length 
+        # Pad coefficient arrays with zeros to have the same length
         max_len = max(len(self.coef), len(other_poly.coef))
         coef1 = np.pad(self.coef, (0, max_len - len(self.coef)))
         coef2 = np.pad(other_poly.coef, (0, max_len - len(other_poly.coef)))
@@ -138,15 +140,15 @@ class GroupPoly():
         result_coef = (coef1 + coef2) % self.group_order
 
         return result_coef
-    
+
     def _subtract(self, other_poly):
         if not isinstance(other_poly, GroupPoly):
             raise ValueError("Objects both must be of class GroupPoly!")
-        
+
         if self.group_order != other_poly.group_order:
             raise ValueError("Polynomials must have the same group order!")
-        
-        # Pad coefficient arrays with zeros to have the same length 
+
+        # Pad coefficient arrays with zeros to have the same length
         max_len = max(len(self.coef), len(other_poly.coef))
         coef1 = np.pad(self.coef, (0, max_len - len(self.coef)))
         coef2 = np.pad(other_poly.coef, (0, max_len - len(other_poly.coef)))
@@ -155,14 +157,14 @@ class GroupPoly():
         result_coef = (coef1 - coef2) % self.group_order
 
         return result_coef
-    
+
     def _multiply(self, other_poly):
         if not isinstance(other_poly, GroupPoly):
             raise ValueError("Objects both must be of class GroupPoly!")
-        
+
         if self.group_order != other_poly.group_order:
             raise ValueError("Polynomials must have the same group order!")
-        
+
         # Calculate degree of resulting polynomial
         degree1 = self.degree()
         degree2 = other_poly.degree()
@@ -174,8 +176,8 @@ class GroupPoly():
         # Perform coefficient-wise multiplication and addition
         for i, coef1 in enumerate(self.coef):
             for j, coef2 in enumerate(other_poly.coef):
-                result_coef[i+j] += (coef1 * coef2) % self.group_order
-        
+                result_coef[i + j] += (coef1 * coef2) % self.group_order
+
         # Modulo reduction
         result_coef %= self.group_order
 
@@ -188,7 +190,7 @@ class GroupPoly():
             raise err
 
         return GroupPoly(self.group_order, result_coef)
-    
+
     def __sub__(self, other_poly):
         try:
             result_coef = self._subtract(other_poly)
@@ -196,21 +198,21 @@ class GroupPoly():
             raise err
 
         return GroupPoly(self.group_order, result_coef)
-    
+
     def __mul__(self, other_poly):
         try:
             result_coef = self._multiply(other_poly)
         except Exception as err:
             raise err
-        
+
         return GroupPoly(self.group_order, result_coef)
-        
+
     def __neg__(self):
         result_coef = np.array(self.coef)
         result_coef *= -1
-        
+
         return GroupPoly(self.group_order, result_coef)
-    
+
     def __eq__(self, other_poly):
         if not isinstance(other_poly, GroupPoly):
             print("GroupPoly.__eq__(): Objects both must be of class GroupPoly!")
@@ -219,7 +221,7 @@ class GroupPoly():
         if self.group_order != other_poly.group_order:
             raise ValueError("Polynomials must have the same group order!")
 
-        # Pad coefficient arrays with zeros to have the same length 
+        # Pad coefficient arrays with zeros to have the same length
         max_len = max(len(self.coef), len(other_poly.coef))
         coef1 = np.pad(self.coef, (0, max_len - len(self.coef)))
         coef2 = np.pad(other_poly.coef, (0, max_len - len(other_poly.coef)))
@@ -232,10 +234,11 @@ class GroupPoly():
     @classmethod
     def zero(cls, group_order: int):
         return cls(group_order, [0])
-    
+
     @classmethod
     def one(cls, group_order: int):
         return cls(group_order, [1])
+
 
 def run_tests():
     print("Running tests...")
@@ -249,7 +252,7 @@ def run_tests():
     poly2 = GroupPoly(group_order, [4, 7, 1])  # 4 + x^2 mod 7
 
     # Addidion test
-    assert (poly1 + poly2) == GroupPoly(group_order, [0, 2]) 
+    assert (poly1 + poly2) == GroupPoly(group_order, [0, 2])
     assert (poly1 + GroupPoly.zero(group_order)) == poly1
 
     # Subtraction test
@@ -261,9 +264,9 @@ def run_tests():
     assert (poly1 * GroupPoly.one(group_order)) == poly1
 
     # Negation test
-    assert -poly1 == GroupPoly(group_order,[4, 5, 1])
+    assert -poly1 == GroupPoly(group_order, [4, 5, 1])
     assert -GroupPoly.zero(group_order) == GroupPoly.zero(group_order)
-    assert -GroupPoly.one(group_order) == GroupPoly(group_order, [group_order-1])
+    assert -GroupPoly.one(group_order) == GroupPoly(group_order, [group_order - 1])
 
     # Zero polynomial test
     assert GroupPoly.zero(group_order) == GroupPoly(group_order, [0])
@@ -273,8 +276,10 @@ def run_tests():
 
     print("Tests completed!")
 
+
 def main():
     run_tests()
+
 
 if __name__ == "__main__":
     main()

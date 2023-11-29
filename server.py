@@ -9,6 +9,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 
+
 class Server:
     def __init__(self, db_path: str):
         """
@@ -55,7 +56,7 @@ class Server:
             os.unlink(file_to_delete)
         except:
             print(f"Could not delete {file_to_delete}: File does not exist")
-        
+
         # Find and delete public key file
         file_to_delete = self.public_key_filepath
         try:
@@ -73,7 +74,7 @@ class Server:
         Returns:
             - None
         """
-        
+
         # Find and delete Client's profile
         file_to_delete = f"{self.db_path}{id}.json"
         try:
@@ -115,7 +116,7 @@ class Server:
             - (bool): Logic value of Client existence in Server's database
         """
         db_file_list = os.listdir(self.db_path)
-        return (f"{client_id}.json" in db_file_list)
+        return f"{client_id}.json" in db_file_list
 
     def RSA_key_pair_exists(self) -> bool:
         """
@@ -128,8 +129,10 @@ class Server:
             - (bool): Logic value of key pair existence in Server's database
         """
         db_file_list = os.listdir(self.db_path)
-        return (self.private_key_filename in db_file_list) and (self.public_key_filename in db_file_list)
-        
+        return (self.private_key_filename in db_file_list) and (
+            self.public_key_filename in db_file_list
+        )
+
     def generate_session_key(self) -> bytes:
         """
         Generate session key using PBKDF2HMAC cryptographic method
@@ -143,11 +146,17 @@ class Server:
         # Generate session key using PBKDF2HMAC KFD function
         session_key_random_bytes = secrets.token_bytes(self.session_key_byte_length)
         session_key_salt = secrets.token_bytes(16)
-        kdf_core = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=session_key_salt, iterations=100000,backend=default_backend())
+        kdf_core = PBKDF2HMAC(
+            algorithm=hashes.SHA256(),
+            length=32,
+            salt=session_key_salt,
+            iterations=100000,
+            backend=default_backend(),
+        )
         session_key = kdf_core.derive(session_key_random_bytes)
-        
+
         return session_key
-    
+
     def get_client_data_dict(self, client_id: int) -> dict:
         """
         Generate session key using PBKDF2HMAC cryptographic method
@@ -165,7 +174,7 @@ class Server:
 
     def send_session_key_to_client(self, client_id: int, DEBUG: bool = False) -> tuple:
         """
-        Simulate sending encapsulated session key and it's checksum value to Client 
+        Simulate sending encapsulated session key and it's checksum value to Client
 
         Parameters:
             - client_id (int): Client's identificator
@@ -185,7 +194,9 @@ class Server:
         session_key_hash = hashlib.sha256(session_key).hexdigest()
 
         # Encapsulate session key using Client's public key obtained during enrolment phase
-        client_public_key = RSA.import_key(self.get_client_data_dict(client_id)["client_public_key_PEM"])
+        client_public_key = RSA.import_key(
+            self.get_client_data_dict(client_id)["client_public_key_PEM"]
+        )
         cipher = PKCS1_OAEP.new(client_public_key)
         encrypted_session_key = cipher.encrypt(session_key)
 
@@ -204,11 +215,11 @@ class Server:
         # Process Client's profile data
         client_enrolment_dict = json.loads(client_enrolment_json)
         client_id = client_enrolment_dict["client_id"]
-        
+
         if self.client_exists(client_id=client_id):
             print(f"Submitted Client ID {client_id} already exists! Returning None...")
             return None
-        
+
         # Save Client's profile into Server's database
         with open(f"{self.db_path}/{client_id}.json", "w") as f:
             f.write(client_enrolment_json)
@@ -224,25 +235,34 @@ class Server:
             - public_verification_data_json (str): Content of public parameters stored in Server's database that are sent to Client in form of JSON
         """
         if not self.client_exists(client_id=client_id):
-            raise FileNotFoundError(f"Submitted Client ID {client_id} is not in Server's database! Please enrol Client...")
-        
+            raise FileNotFoundError(
+                f"Submitted Client ID {client_id} is not in Server's database! Please enrol Client..."
+            )
+
         # Read Client's profile data
         with open(f"{self.db_path}/{client_id}.json", "rt") as f:
             server_public_client_data_json = f.read()
 
-        # Create Clients public data as JSON 
+        # Create Clients public data as JSON
         public_verication_dict = json.loads(server_public_client_data_json)
-        public_verification_data_dict = {key : public_verication_dict[key] for key in public_verication_dict.keys() if key not in ("client_public_key_PEM")}
+        public_verification_data_dict = {
+            key: public_verication_dict[key]
+            for key in public_verication_dict.keys()
+            if key not in ("client_public_key_PEM")
+        }
         public_verification_data_json = json.dumps(public_verification_data_dict)
 
         return public_verification_data_json
+
 
 def run_tests():
     SERVER_DB_PATH = "./server_db/"
     s = Server(SERVER_DB_PATH)
 
+
 def main():
     run_tests()
+
 
 if __name__ == "__main__":
     main()
