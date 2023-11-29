@@ -6,13 +6,16 @@ from group_poly import Group, GroupPoly
 
 class FuzzyVault:
 
-    def __init__(self, group_order: int, bio_template: list):#, secret_polynomial: list, verify_threshold: int, DEBUG=False):
+    def __init__(self, group_order: int, bio_template: list):
         """
-        param group_order: order of a group to use for finite field calculations;
-        param bio_template: enrolment biometrics template;
-        param secret_polynomial: secret polynomial to use during enrolment phase
-        param verify_threshold: value of tau - how many biometrics parameters have to match with enrolment template at least
-        param DEBUG: if set to True, additional description will be logged
+        Fuzzy Vault class constructor, that returns Fuzzy Vault instantiation object
+
+        Parameters:
+            - group_order (int): Order of group the BRAKE protocol is executed in
+            - bio_template (list): Biometric vector that contains properties of measured and processed biometric modality on Client's device
+
+        Returns:
+            - self (Fuzzy Vault): Fuzzy Vault class object
         """
         
         self.group_order = group_order
@@ -27,6 +30,16 @@ class FuzzyVault:
 
     @classmethod
     def generate_secret_polynomial(cls, group_order: int, sec_poly_deg: int) -> GroupPoly:
+        """
+        Generate secret polynomial in given finite field of certain order
+
+        Parameters:
+            - group_order (int): Order of group the BRAKE protocol is executed in
+            - sec_poly_deg (int): Desired degree of generated secret polynomial
+
+        Returns:
+            - self (Fuzzy Vault): Fuzzy Vault class object
+        """
         secret_coefs = np.array([], dtype=np.uint64)
         for i in range(sec_poly_deg):
             upper_bound = group_order - 1
@@ -37,27 +50,59 @@ class FuzzyVault:
 
         return GroupPoly(group_order, secret_coefs)
 
-    def lock(self, secret_polynomial=None) -> None:
+    def lock(self, secret_polynomial: GroupPoly = None) -> None:
+        """
+        Lock secret polynomial into Fuzzy Vault using provided Client's biometric template
+
+        Parameters:
+            - secret_polynomial (GroupPoly): Secret polynomial to be locked into Fuzzy Vault
+
+        Returns:
+            - None
+        """
+        # Encode biometric template into polynomial in finite field of order the same as in secret
         vault_polynomial = GroupPoly.one(self.group_order)
         for value in self.bio_template:
             multiplication_component = GroupPoly(self.group_order, [-value, 1])
             vault_polynomial = vault_polynomial * multiplication_component
+
+        # Add secret polynomial to polynomial derived from Client's biometric template
         vault_polynomial = vault_polynomial + secret_polynomial
         self.vault_polynomial = vault_polynomial
 
-    def get_random_arguments(self, how_many_indices: int):
+    def get_random_argument_combinations(self, how_many_indices: int, how_many_combinations: int) -> list:
+        """
+        Generate list of unique index combinations of length equal to the number of unlocking rounds. Unique combination contains indices of biometric template to use in specific unlocking round.
+
+        Parameters:
+            - secret_polynomial (GroupPoly): Secret polynomial to be locked into Fuzzy Vault
+
+        Returns:
+            - None
+        """
         set_of_indices = set(range(self.bio_template_length))
-        random_indices_of_bio_set = sorted(random.sample(set_of_indices, how_many_indices))
-        random_arguments = [self.bio_template[ind] for ind in random_indices_of_bio_set]
-        return random_arguments
+        unique_combinations_of_indices = set()
+
+        while len(unique_combinations_of_indices) < how_many_combinations:
+            combination = tuple(sorted(random.sample(set_of_indices, how_many_indices)))
+            unique_combinations_of_indices.add(combination)
+
+        unique_combinations_of_indices = list(unique_combinations_of_indices)
+
+        for i, combination in enumerate(unique_combinations_of_indices):
+            unique_combinations_of_indices[i] = list(combination)
+
+        return list(unique_combinations_of_indices)
+
 
     def unlock(self, verify_threshold: int) -> GroupPoly:
         GF = galois.GF(self.group_order)
         number_of_unlocking_rounds = 3000
 
         poly_counting_dict = {}
-        for i in range(number_of_unlocking_rounds):
-            arguments = GF(self.get_random_arguments(verify_threshold))
+        unique_index_combinations = self.get_random_argument_combinations(verify_threshold, number_of_unlocking_rounds)
+        for combination in unique_index_combinations:
+            arguments = GF([self.bio_template[ind] for ind in combination])
             values = [self.vault_polynomial.eval(int(arg)) for arg in arguments]
             values = GF(values)
 
@@ -110,15 +155,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-"""
-TODO:
-- works for exactly the same bio_templates BUT:
-    - cannot have more than one of the same vlaue as x 
-
-Important docs - Galois module:
-https://mhostetter.github.io/galois/latest/api/galois.FieldArray/#examples
-https://stackoverflow.com/questions/48065360/interpolate-polynomial-over-a-finite-field
-https://pypi.org/project/galois/
-https://github.com/mhostetter/galois
-"""

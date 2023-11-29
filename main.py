@@ -10,14 +10,16 @@ def main():
     # If verify_only == True - the program will skip the enrolment phase
     verify_only = False
     # If erase_client == True - client's profile will be erased from server's database at the end of the program
-    erase_client = False
+    erase_client = True
     
     # Define constant values
     SERVER_DB_PATH = "./server_db/"
+    PRIME = 12401
     ENROL_BOTTOM_BOUNDRY = 1
-    ENROL_UP_BOUNDRY = 12400
-    G = Group(prime=12401)
+    ENROL_UP_BOUNDRY = PRIME - 1
+    G = Group(prime=PRIME)
     bio_template_length = 44
+    correct_samples = 22
 
     # Create authentication Server instance
     server = Server(SERVER_DB_PATH)
@@ -28,7 +30,9 @@ def main():
         # Create enrolment Client instance
         client_id = 1
         verify_threshold = 8
-        client_enrolment_biometrics_template = [i for i in range(bio_template_length)]
+        client_enrolment_biometrics_template = [random.randint(ENROL_BOTTOM_BOUNDRY, ENROL_UP_BOUNDRY) for i in range(bio_template_length)]
+        random.shuffle(client_enrolment_biometrics_template)
+        print(f"Client enrol temp: {client_enrolment_biometrics_template}")
         client_enrolment = Client(client_id, client_enrolment_biometrics_template)
 
         # Enrol Client to Server
@@ -41,8 +45,8 @@ def main():
     
     # Create verification Client instance
     client_id = 1
-    correct_samples = 22
-    client_verification_biometrics_template = [i for i in range(correct_samples)] + [random.randint(ENROL_BOTTOM_BOUNDRY, ENROL_UP_BOUNDRY) for i in range(bio_template_length - correct_samples)]
+    client_verification_biometrics_template =  list(client_enrolment_biometrics_template[:correct_samples]) + [random.randint(ENROL_BOTTOM_BOUNDRY, ENROL_UP_BOUNDRY) for i in range(bio_template_length - correct_samples)]
+    random.shuffle(client_verification_biometrics_template)
     client_verification = Client(client_id, client_verification_biometrics_template)
 
     # Send client request for public data
@@ -56,14 +60,16 @@ def main():
     print("\n###### START KEY EXCHANGE ######\n")
 
     # Establish session key
-    encrypted_session_key, session_key_hash = server.send_session_key_to_client(client_id=client_verification.id)
+    encrypted_session_key, session_key_hash = server.send_session_key_to_client(client_id=client_verification.id, DEBUG=debug_flag)
     recovered_session_key = client_verification.recover_session_key(encrypted_session_key=encrypted_session_key, client_private_key_PEM=client_private_key_PEM)
     recovered_session_key_hash = client_verification.get_session_key_hash(recovered_session_key)
     
+    # Assert if session key hashes are the same
+    print("\nRunning session key hashes comparison assertion...")
+    assert(recovered_session_key_hash == session_key_hash)
+    
     print("\n###### END KEY EXCHANGE ######\n")
 
-    # Assert if session key hashes are the same
-    assert(recovered_session_key_hash == session_key_hash)
     
     print("\n###### SESSION KEY EXCHANGE SUCCESSFUL ######\n")
 

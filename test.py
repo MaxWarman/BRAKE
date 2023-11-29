@@ -1,7 +1,3 @@
-import numpy as np
-import sympy as sp
-import scipy
-
 def main():
     print("test")
 
