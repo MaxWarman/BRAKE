@@ -52,7 +52,7 @@ class FuzzyVault:
 
     def lock(self, secret_polynomial: GroupPoly = None) -> None:
         """
-        Lock secret polynomial into Fuzzy Vault using provided Client's biometric template
+        Lock secret polynomial into Fuzzy Vault using biometric enrolment template provided by Client
 
         Parameters:
             - secret_polynomial (GroupPoly): Secret polynomial to be locked into Fuzzy Vault
@@ -72,23 +72,26 @@ class FuzzyVault:
 
     def get_random_argument_combinations(self, how_many_indices: int, how_many_combinations: int) -> list:
         """
-        Generate list of unique index combinations of length equal to the number of unlocking rounds. Unique combination contains indices of biometric template to use in specific unlocking round.
+        Generate list of unique index combinations of length equal to the number of unlocking rounds. Unique combination contains indices of biometric template to use in specific unlocking round
 
         Parameters:
-            - secret_polynomial (GroupPoly): Secret polynomial to be locked into Fuzzy Vault
+            - how_many_indices (int): How many indices to put into single combination, equivalent of verification threshold
+            - how_many_combinations (int): How many unique combinations to generate, equivalent of number of unlocking rounds
 
         Returns:
-            - None
+            - unique_combinations_of_indices (list): List of all generated unique combinations of indices
         """
+        # Define set of all indices in biometric template
         set_of_indices = set(range(self.bio_template_length))
+ 
+        # Generate desired amount of unique combinations of indices of biometric template
         unique_combinations_of_indices = set()
-
         while len(unique_combinations_of_indices) < how_many_combinations:
             combination = tuple(sorted(random.sample(set_of_indices, how_many_indices)))
             unique_combinations_of_indices.add(combination)
 
+        # Parse sets of combinations into lists
         unique_combinations_of_indices = list(unique_combinations_of_indices)
-
         for i, combination in enumerate(unique_combinations_of_indices):
             unique_combinations_of_indices[i] = list(combination)
 
@@ -96,27 +99,47 @@ class FuzzyVault:
 
 
     def unlock(self, verify_threshold: int) -> GroupPoly:
+        """
+        Unlock secret polynomial from Fuzzy Vault using biometric verification template provided by Client
+
+        Parameters:
+            - verify_threshold (int): Number of (argument, value) pairs of Fuzzy Vault used to recover secret polynomial
+
+        Returns:
+            - secret_polynomiak (GroupPoly): Recovered secret polynomial object
+        """
+        # Define Finite Field of order delivered to Client from Server
         GF = galois.GF(self.group_order)
+
+        # Define numver of unlocking rounds to perform
         number_of_unlocking_rounds = 3000
 
+        # Dictionary structure for counting occurence of certain secret polynomials during unlocking process
         poly_counting_dict = {}
+
+        # Generate unique index combination list
         unique_index_combinations = self.get_random_argument_combinations(verify_threshold, number_of_unlocking_rounds)
+
         for combination in unique_index_combinations:
+
             arguments = GF([self.bio_template[ind] for ind in combination])
             values = [self.vault_polynomial.eval(int(arg)) for arg in arguments]
             values = GF(values)
 
+            # Recover secret polynomial from chosen arguments 'x' and Fuzzy Vault values V(x) using Lagrange interpolation for finite field polynomials
             try:
                 interpolated_polynomial = galois.lagrange_poly(arguments, values)
             except:
                 continue
             
+            # Count secret polynomial occurence
             secret_polynomial_coeffs = list([int(coefficient) for coefficient in interpolated_polynomial.coefficients()[::-1]])
             if str(secret_polynomial_coeffs) not in poly_counting_dict.keys():
                 poly_counting_dict[str(secret_polynomial_coeffs)] = 1
             else:
                 poly_counting_dict[str(secret_polynomial_coeffs)] += 1
 
+        # Choose most common ocurring polynomial as true recovered secret polynomial
         most_common_coefs_str = str(max(poly_counting_dict, key=poly_counting_dict.get))
         secret_polynomial_coeffs = [int(val) for val in most_common_coefs_str.replace("[", "").replace("]", "").split(", ")]
         secret_polynomial = GroupPoly( group_order=self.group_order, coef=secret_polynomial_coeffs)
@@ -124,6 +147,15 @@ class FuzzyVault:
         return secret_polynomial
     
     def set_vault_polynomial(self, vault_polynomial_coefs: list) -> None:
+        """
+        Set vault polynomial as Fuzzy Vault object property
+
+        Parameters:
+            - vault_polynomial_coefs (list): List of coefficients of Fuzzy Vault polynomial
+
+        Returns:
+            - None
+        """
         self.vault_polynomial = GroupPoly(group_order=self.group_order, coef=vault_polynomial_coefs)
 
 def run_tests():
