@@ -93,7 +93,8 @@ def execute_BRAKE(correct_samples=None, number_of_unlocking_rounds=None):
     )
 
     # Assert if session key hashes are the same
-    print("\nRunning session key hashes comparison assertion...")
+    if debug_flag:
+        print("\nRunning session key hashes comparison assertion...")
     assert recovered_session_key_hash == session_key_hash
 
     print("\n###### END KEY EXCHANGE ######\n")

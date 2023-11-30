@@ -44,7 +44,7 @@ class Client:
         # Create FuzzyVault using secret polynomial and lock it
         fuzzy_vault = FuzzyVault(
             group_order=group.order, bio_template=self.biometrics_template
-        )  # , secret_polynomial=secret_polynomial, verify_threshold=verify_threshold, DEBUG=DEBUG)
+        )
         fuzzy_vault.lock(secret_polynomial=secret_polynomial)
 
         # Evaluate OPRF with Evaluator
@@ -189,7 +189,6 @@ class Client:
         evaluated_polynomial = evaluator.evaluate(blinded_polynomial)
 
         # Unblind result returned by the Evaluator
-        # r_inv = -r % r_mod
         r_inv = group.order - 1 - r
         unblinded_evaluator_result = Client.unblind(
             evaluated_polynomial, r_inv, r_mod, DEBUG=DEBUG
@@ -270,7 +269,6 @@ class Client:
         """
         evaluated_polynomial_int = int(evaluated_polynomial, 16)
 
-        # unblind = pow(evaluated_polynomial_int, r_inv, r_mod)
         unblinded = (evaluated_polynomial_int + r_inv) % r_mod
         unblinded = hex(unblinded)[2:]
 

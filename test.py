@@ -3,11 +3,11 @@ from main import execute_BRAKE
 
 
 def test_correct_samples(test_result_directory):
-    test_correct_samples_filepath = "test_correct_samples.csv"
+    test_correct_samples_filepath = "test_correct_samples_50000.csv"
 
     START_CORRECT_SAMPLES = 8
     END_CORRECT_SAMPLES = 44
-    NUMBER_OF_UNLOCKING_ROUNDS = 5000
+    NUMBER_OF_UNLOCKING_ROUNDS = 50000
     TESTS_FOR_SAMPLE = 25
     TEST_CLIENT_PROFILE_FILEPATH = "./server_db/1.json"
 
