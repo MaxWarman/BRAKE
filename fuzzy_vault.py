@@ -42,7 +42,7 @@ class FuzzyVault:
         Returns:
             - self (Fuzzy Vault): Fuzzy Vault class object
         """
-        secret_coefs = np.array([], dtype=np.uint64)
+        secret_coefs = np.array([], dtype=object)
         for i in range(sec_poly_deg):
             upper_bound = group_order - 1
             lower_bound = 0 if i != sec_poly_deg - 1 else 1

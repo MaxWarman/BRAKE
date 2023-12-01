@@ -326,6 +326,10 @@ class Client:
         Returns:
             - (str): Public values distributed to Server in JSON format
         """
+        vault_coefs = list(vault_coefs)
+        for i in range(len(vault_coefs)):
+            vault_coefs[i] = int(vault_coefs[i])
+ 
         public_values_dict = {
             "client_id": self.id,
             "vault_coefs": list(vault_coefs),

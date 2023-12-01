@@ -33,7 +33,7 @@ class GroupPoly:
             - self (GroupPoly): GroupPoly class object
         """
         self.group_order = group_order
-        self.coef = np.array(coef, dtype=int)
+        self.coef = np.array(coef, dtype=object)
         self.update_poly()
 
     def mod_poly(self) -> None:
@@ -171,7 +171,7 @@ class GroupPoly:
         result_degree = degree1 + degree2
 
         # Initialize the result coefficient array with zeros
-        result_coef = np.zeros(result_degree + 1, dtype=int)
+        result_coef = np.zeros(result_degree + 1, dtype=object)
 
         # Perform coefficient-wise multiplication and addition
         for i, coef1 in enumerate(self.coef):
@@ -208,7 +208,7 @@ class GroupPoly:
         return GroupPoly(self.group_order, result_coef)
 
     def __neg__(self):
-        result_coef = np.array(self.coef)
+        result_coef = np.array(self.coef, dtype=object)
         result_coef *= -1
 
         return GroupPoly(self.group_order, result_coef)

@@ -7,7 +7,7 @@ from group_poly import Group
 
 def execute_BRAKE(correct_samples=None, number_of_unlocking_rounds=None):
     # If debug_flag == True - enter verbose mode with additional messages during program execution
-    debug_flag = False
+    debug_flag = True
     # If verify_only == True - the program will skip the enrolment phase
     verify_only = False
     # If erase_client == True - client's profile will be erased from server's database at the end of the program
@@ -15,16 +15,23 @@ def execute_BRAKE(correct_samples=None, number_of_unlocking_rounds=None):
 
     # Define constant values
     SERVER_DB_PATH = "./server_db/"
+    
+    # Set prime number 'q' and Group object with order 'q'
     PRIME = 12401
+    G = Group(prime=PRIME)
+
+    # Set boundries to randomly generate biometric template values from
     ENROL_BOTTOM_BOUNDRY = 1
     ENROL_UP_BOUNDRY = PRIME - 1
 
-    G = Group(prime=PRIME)
+    # Set biometric template length
     bio_template_length = 44
 
+    # Set number of correct samples corresponding with the enrolment template
     if correct_samples is None:
         correct_samples = 22
 
+    # Set number of unlocking rounds to execute during verification phase
     if number_of_unlocking_rounds is None:
         number_of_unlocking_rounds = 5000
 
