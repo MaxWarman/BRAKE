@@ -17,7 +17,7 @@ def execute_BRAKE(correct_samples=None, number_of_unlocking_rounds=None):
     SERVER_DB_PATH = "./server_db/"
     
     # Set prime number 'q' and Group object with order 'q'
-    PRIME = 12401
+    PRIME = 100003
     G = Group(prime=PRIME)
 
     # Set boundries to randomly generate biometric template values from

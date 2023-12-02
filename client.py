@@ -67,7 +67,7 @@ class Client:
 
         # Print values for debugging purpose
         if DEBUG:
-            print("### Endolment Debug Log ###\n")
+            print("### Enrolment Debug Log ###\n")
             print(f"Secret poly f: {secret_polynomial}\n")
             print(f"Unblinded poly [k]H(f): {unblinded_evaluator_result}\n")
             print(f"Public values json: {public_values_json}\n")
