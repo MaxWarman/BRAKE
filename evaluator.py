@@ -34,7 +34,7 @@ class Evaluator:
         input_value_dec = int(input_value, 16)
 
         # Insecure evaluation not based on any known OPRF primitive scheme!
-        evaluated_value_dec = (input_value_dec + self._secret_key) % self.mod
+        evaluated_value_dec = (input_value_dec * self._secret_key) % self.mod
         evaluated_value_hex = hex(evaluated_value_dec)[2:]
 
         return evaluated_value_hex

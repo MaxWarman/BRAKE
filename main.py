@@ -10,14 +10,14 @@ def execute_BRAKE(correct_samples=None, number_of_unlocking_rounds=None):
     debug_flag = True
     # If verify_only == True - the program will skip the enrolment phase
     verify_only = False
-    # If erase_client == True - client's profile will be erased from server's database at the end of the program
+    # If erase_client == True - client's profile will be erased from server's database after successful key exchange
     erase_client = True
 
     # Define constant values
     SERVER_DB_PATH = "./server_db/"
     
     # Set prime number 'q' and Group object with order 'q'
-    PRIME = 100003
+    PRIME = 2147483647
     G = Group(prime=PRIME)
 
     # Set boundries to randomly generate biometric template values from
@@ -104,12 +104,13 @@ def execute_BRAKE(correct_samples=None, number_of_unlocking_rounds=None):
         print("\nRunning session key hashes comparison assertion...")
     assert recovered_session_key_hash == session_key_hash
 
-    print("\n###### END KEY EXCHANGE ######\n")
-
     print("\n###### SESSION KEY EXCHANGE SUCCESSFUL ######\n")
 
     if debug_flag:
         print(f"Exchanged session key value: {recovered_session_key}")
+    
+    print("\n###### END KEY EXCHANGE ######\n")
+
 
     if erase_client:
         print("\n###### CLEAN-UP STEP ######\n")

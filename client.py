@@ -53,9 +53,9 @@ class Client:
         )
 
         # Generate seeded client key pair: [0] - private, [1] - public
-        client_public_key_PEM = self.generate_key_pair_PEM(
+        client_private_key_PEM, client_public_key_PEM = self.generate_key_pair_PEM(
             unblinded_evaluator_result=unblinded_evaluator_result
-        )[1]
+        )
 
         # Send (id, V(x), cpk_t) to the server
         public_values_json = self.create_public_values_json(
@@ -71,6 +71,7 @@ class Client:
             print(f"Secret poly f: {secret_polynomial}\n")
             print(f"Unblinded poly [k]H(f): {unblinded_evaluator_result}\n")
             print(f"Public values json: {public_values_json}\n")
+            print(f"Generated private key:\n{client_private_key_PEM}")
 
         return public_values_json
 
@@ -189,7 +190,7 @@ class Client:
         evaluated_polynomial = evaluator.evaluate(blinded_polynomial)
 
         # Unblind result returned by the Evaluator
-        r_inv = group.order - 1 - r
+        # r_inv = group.order - 1 - r
         unblinded_evaluator_result = Client.unblind(
             evaluated_polynomial, r_inv, r_mod, DEBUG=DEBUG
         )
@@ -245,8 +246,7 @@ class Client:
         hashed_polynomial_int = int(hashed_polynomial, 16)
 
         # Perform blinding operation
-        # blind = pow(hashed_polynomial_int, r, r_mod)
-        blind = (hashed_polynomial_int + r) % r_mod
+        blind = (hashed_polynomial_int * r) % r_mod
         blind = hex(blind)[2:]
 
         return blind
@@ -269,7 +269,7 @@ class Client:
         """
         evaluated_polynomial_int = int(evaluated_polynomial, 16)
 
-        unblinded = (evaluated_polynomial_int + r_inv) % r_mod
+        unblinded = (evaluated_polynomial_int * r_inv) % r_mod
         unblinded = hex(unblinded)[2:]
 
         return unblinded
@@ -289,11 +289,9 @@ class Client:
                 - r_mod (int): Modulus for blinding procedure
         """
         # Set boundries for 'r' parameter generation
-        r_bottom_boundry = 2
-        r_top_boundry = (
-            0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF42
-        )
         r_mod = 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF43
+        r_bottom_boundry = 2
+        r_top_boundry = r_mod-1
 
         # Generate blinding parameter 'r' and find it's inverse for 'r_mod'
         found_r_inv = False
