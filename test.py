@@ -7,8 +7,8 @@ def test_time(test_result_directory):
 
     CORRECT_SAMPLES = 44
     TEST_CLIENT_PROFILE_FILEPATH = "./server_db/1.json"
-    TESTS_FOR_NUMBER = 25
-    NUMBERS_OF_UNLOCKING_ROUNDS = [5, 50, 500, 5000, 50000, 500000, 5000000]
+    TESTS_FOR_NUMBER = 10
+    NUMBERS_OF_UNLOCKING_ROUNDS = [5, 50, 500, 5000, 50000]
     
     with open(f"{test_result_directory}{test_correct_samples_filepath}", "w") as f:
         f.write(f"time;unlocking_rounds\n")
@@ -81,8 +81,9 @@ def main():
     if not os.path.exists(test_result_directory):
         os.makedirs(test_result_directory)
 
-    #test_correct_samples(test_result_directory=test_result_directory)
-    test_time(test_result_directory)
+    # Uncomment for desired test
+    # test_correct_samples(test_result_directory=test_result_directory)
+    # test_time(test_result_directory)
 
 if __name__ == "__main__":
     main()
